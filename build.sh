@@ -6,10 +6,10 @@ mkdir -p dist
 
 # Build JavaScript files with Bun
 echo "Building JavaScript files..."
-bun build ./index.ts --outdir ./dist --target node --format esm --sourcemap=external
-bun build ./circuit-breaker.ts --outdir ./dist --target node --format esm --sourcemap=external
-bun build ./manager.ts --outdir ./dist --target node --format esm --sourcemap=external
-bun build ./types.ts --outdir ./dist --target node --format esm --sourcemap=external
+bun build ./src/index.ts --outdir ./dist --target node --format esm --sourcemap=external
+bun build ./src/circuit-breaker.ts --outdir ./dist --target node --format esm --sourcemap=external
+bun build ./src/manager.ts --outdir ./dist --target node --format esm --sourcemap=external
+bun build ./src/types.ts --outdir ./dist --target node --format esm --sourcemap=external
 
 echo "Build complete!"
 echo "Note: TypeScript uses source .ts files for type checking"

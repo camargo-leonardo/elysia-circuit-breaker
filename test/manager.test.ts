@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "bun:test";
-import { CircuitBreakerManager } from "../manager";
-import { CircuitState } from "../types";
+import { CircuitBreakerManager } from "../src/manager";
+import { CircuitState } from "../src/types";
 
 describe("CircuitBreakerManager", () => {
   let manager: CircuitBreakerManager;

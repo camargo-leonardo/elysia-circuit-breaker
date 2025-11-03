@@ -7,34 +7,32 @@
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./index.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./index.ts",
+      "types": "./src/index.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./circuit-breaker": {
-      "types": "./circuit-breaker.ts",
+      "types": "./src/circuit-breaker.ts",
       "import": "./dist/circuit-breaker.js",
       "default": "./dist/circuit-breaker.js"
     },
     "./manager": {
-      "types": "./manager.ts",
+      "types": "./src/manager.ts",
       "import": "./dist/manager.js",
       "default": "./dist/manager.js"
     },
     "./types": {
-      "types": "./types.ts",
+      "types": "./src/types.ts",
       "import": "./dist/types.js",
       "default": "./dist/types.js"
     }
   },
   "files": [
     "dist",
-    "*.ts",
-    "!*.test.ts",
-    "!*.spec.ts",
+    "src",
     "README.md",
     "LICENSE"
   ],

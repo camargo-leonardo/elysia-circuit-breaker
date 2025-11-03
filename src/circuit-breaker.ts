@@ -1,36 +1,40 @@
-import { CircuitState, CircuitBreakerConfig, CircuitBreakerStats } from './types'
+import {
+  CircuitState,
+  CircuitBreakerConfig,
+  CircuitBreakerStats,
+} from "./types";
 
 export class CircuitBreakerError extends Error {
   constructor(
     message: string,
     public readonly circuitName: string,
-    public readonly state: CircuitState,
+    public readonly state: CircuitState
   ) {
-    super(message)
-    this.name = 'CircuitBreakerError'
+    super(message);
+    this.name = "CircuitBreakerError";
   }
 }
 
 export class CircuitBreaker {
-  private state: CircuitState = CircuitState.CLOSED
-  private failures = 0
-  private successes = 0
-  private totalCalls = 0
-  private lastFailureTime?: number
-  private lastSuccessTime?: number
-  private resetTimer?: ReturnType<typeof setTimeout>
+  private state: CircuitState = CircuitState.CLOSED;
+  private failures = 0;
+  private successes = 0;
+  private totalCalls = 0;
+  private lastFailureTime?: number;
+  private lastSuccessTime?: number;
+  private resetTimer?: ReturnType<typeof setTimeout>;
 
   private readonly config: Required<
-    Omit<CircuitBreakerConfig, 'onOpen' | 'onClose' | 'onHalfOpen'>
+    Omit<CircuitBreakerConfig, "onOpen" | "onClose" | "onHalfOpen">
   > & {
-    onOpen?: (name: string) => void
-    onClose?: (name: string) => void
-    onHalfOpen?: (name: string) => void
-  }
+    onOpen?: (name: string) => void;
+    onClose?: (name: string) => void;
+    onHalfOpen?: (name: string) => void;
+  };
 
   constructor(
     private readonly name: string,
-    config: CircuitBreakerConfig = {},
+    config: CircuitBreakerConfig = {}
   ) {
     this.config = {
       failureThreshold: config.failureThreshold ?? 5,
@@ -39,34 +43,34 @@ export class CircuitBreaker {
       onOpen: config.onOpen,
       onClose: config.onClose,
       onHalfOpen: config.onHalfOpen,
-    }
+    };
   }
 
   /**
    * Execute a function with circuit breaker protection
    */
   async execute<T>(fn: () => Promise<T>): Promise<T> {
-    this.totalCalls++
+    this.totalCalls++;
 
     if (this.state === CircuitState.OPEN) {
       if (this.shouldAttemptReset()) {
-        this.transitionToHalfOpen()
+        this.transitionToHalfOpen();
       } else {
         throw new CircuitBreakerError(
           `Circuit breaker "${this.name}" is OPEN`,
           this.name,
-          this.state,
-        )
+          this.state
+        );
       }
     }
 
     try {
-      const result = await this.executeWithTimeout(fn)
-      this.onSuccess()
-      return result
+      const result = await this.executeWithTimeout(fn);
+      this.onSuccess();
+      return result;
     } catch (error) {
-      this.onFailure()
-      throw error
+      this.onFailure();
+      throw error;
     }
   }
 
@@ -81,23 +85,23 @@ export class CircuitBreaker {
       totalCalls: this.totalCalls,
       lastFailureTime: this.lastFailureTime,
       lastSuccessTime: this.lastSuccessTime,
-    }
+    };
   }
 
   /**
    * Manually reset the circuit breaker to closed state
    */
   reset(): void {
-    this.state = CircuitState.CLOSED
-    this.failures = 0
-    this.clearResetTimer()
+    this.state = CircuitState.CLOSED;
+    this.failures = 0;
+    this.clearResetTimer();
   }
 
   /**
    * Get current state
    */
   getState(): CircuitState {
-    return this.state
+    return this.state;
   }
 
   private async executeWithTimeout<T>(fn: () => Promise<T>): Promise<T> {
@@ -105,71 +109,72 @@ export class CircuitBreaker {
       fn(),
       new Promise<T>((_, reject) =>
         setTimeout(
-          () => reject(new Error(`Request timeout after ${this.config.timeout}ms`)),
-          this.config.timeout,
-        ),
+          () =>
+            reject(new Error(`Request timeout after ${this.config.timeout}ms`)),
+          this.config.timeout
+        )
       ),
-    ])
+    ]);
   }
 
   private onSuccess(): void {
-    this.successes++
-    this.lastSuccessTime = Date.now()
+    this.successes++;
+    this.lastSuccessTime = Date.now();
 
     if (this.state === CircuitState.HALF_OPEN) {
-      this.transitionToClosed()
+      this.transitionToClosed();
     }
 
-    this.failures = 0
+    this.failures = 0;
   }
 
   private onFailure(): void {
-    this.failures++
-    this.lastFailureTime = Date.now()
+    this.failures++;
+    this.lastFailureTime = Date.now();
 
     if (this.state === CircuitState.HALF_OPEN) {
-      this.transitionToOpen()
+      this.transitionToOpen();
     } else if (this.failures >= this.config.failureThreshold) {
-      this.transitionToOpen()
+      this.transitionToOpen();
     }
   }
 
   private shouldAttemptReset(): boolean {
-    if (!this.lastFailureTime) return false
-    return Date.now() - this.lastFailureTime >= this.config.resetTimeout
+    if (!this.lastFailureTime) return false;
+    return Date.now() - this.lastFailureTime >= this.config.resetTimeout;
   }
 
   private transitionToOpen(): void {
-    this.state = CircuitState.OPEN
-    this.config.onOpen?.(this.name)
-    this.scheduleReset()
+    this.state = CircuitState.OPEN;
+    this.config.onOpen?.(this.name);
+    this.scheduleReset();
   }
 
   private transitionToClosed(): void {
-    this.state = CircuitState.CLOSED
-    this.failures = 0
-    this.config.onClose?.(this.name)
-    this.clearResetTimer()
+    this.state = CircuitState.CLOSED;
+    this.failures = 0;
+    this.config.onClose?.(this.name);
+    this.clearResetTimer();
   }
 
   private transitionToHalfOpen(): void {
-    this.state = CircuitState.HALF_OPEN
-    this.config.onHalfOpen?.(this.name)
+    this.state = CircuitState.HALF_OPEN;
+    this.config.onHalfOpen?.(this.name);
   }
 
   private scheduleReset(): void {
-    this.clearResetTimer()
+    this.clearResetTimer();
     this.resetTimer = setTimeout(() => {
       if (this.state === CircuitState.OPEN) {
-        this.transitionToHalfOpen()
+        this.transitionToHalfOpen();
       }
-    }, this.config.resetTimeout)
+    }, this.config.resetTimeout);
   }
 
   private clearResetTimer(): void {
     if (this.resetTimer) {
-      clearTimeout(this.resetTimer)
-      this.resetTimer = undefined
+      clearTimeout(this.resetTimer);
+      this.resetTimer = undefined;
     }
   }
 }
