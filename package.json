@@ -1,0 +1,70 @@
+{
+  "name": "elysia-circuit-breaker",
+  "version": "1.0.0",
+  "description": "Circuit Breaker plugin for ElysiaJS",
+  "author": "Leonardo Camargo",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./circuit-breaker": {
+      "types": "./circuit-breaker.ts",
+      "import": "./dist/circuit-breaker.js",
+      "default": "./dist/circuit-breaker.js"
+    },
+    "./manager": {
+      "types": "./manager.ts",
+      "import": "./dist/manager.js",
+      "default": "./dist/manager.js"
+    },
+    "./types": {
+      "types": "./types.ts",
+      "import": "./dist/types.js",
+      "default": "./dist/types.js"
+    }
+  },
+  "files": [
+    "dist",
+    "*.ts",
+    "!*.test.ts",
+    "!*.spec.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "./build.sh",
+    "prepublishOnly": "bun run build",
+    "test": "bun test"
+  },
+  "keywords": [
+    "elysia",
+    "circuit-breaker",
+    "resilience",
+    "fault-tolerance",
+    "elysiajs",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/camargo-leonardo/elysia-circuit-breaker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/camargo-leonardo/elysia-circuit-breaker/issues"
+  },
+  "homepage": "https://github.com/camargo-leonardo/elysia-circuit-breaker#readme",
+  "peerDependencies": {
+    "elysia": ">= 1.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.1",
+    "elysia": "^1.1.0",
+    "typescript": "^5.3.3"
+  }
+}

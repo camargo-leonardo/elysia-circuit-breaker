@@ -1,0 +1,30 @@
+# Build script
+build.sh
+
+# Configuration
+tsconfig.json
+.gitignore
+
+# Tests and examples
+test/
+example/
+
+# Development files
+*.test.ts
+*.spec.ts
+
+# Documentation
+STRUCTURE.md
+PUBLISHING.md
+VALIDATION.md
+USAGE.md
+
+# Build artifacts
+node_modules/
+.DS_Store
+*.log
+bun.lock
+
+# Git
+.git/
+.github/
