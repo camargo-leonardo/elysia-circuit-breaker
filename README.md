@@ -299,11 +299,6 @@ Run the tests:
 bun test circuit-breaker/test
 ```
 
-## 📚 Additional Resources
-
-- [Circuit Breaker Pattern (Martin Fowler)](https://martinfowler.com/bliki/CircuitBreaker.html)
-- [Elysia Documentation](https://elysiajs.com)
-
 ## 📄 License
 
 MIT
